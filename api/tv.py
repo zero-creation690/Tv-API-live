@@ -1,27 +1,25 @@
-import json
 import requests
+import json
 
-def handler(request, context):
-    # Enable CORS
-    headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type"
-    }
+def handler(request, response):
+    # --- Enable CORS ---
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
 
-    if request["method"] == "OPTIONS":
-        return {"status": 200, "body": "", "headers": headers}
+    # --- Handle preflight request ---
+    if request.method == "OPTIONS":
+        return response.status(200).send("")
 
-    search = request["query"].get("search", "")
+    search = request.query.get("search")
     if not search:
-        return {"status": 400, "body": json.dumps({"error": "Missing search parameter"}), "headers": headers}
+        return response.status(400).json({"error": "Missing search parameter"})
 
     try:
-        # Forward the request to the original API
+        # Call your original API
         url = f"https://tv-chi-eosin.vercel.app/tv?search={search}"
-        resp = requests.get(url, timeout=10)
-        data = resp.json()
+        r = requests.get(url, timeout=10)
+        data = r.json()
+        return response.status(200).json(data)
     except Exception as e:
-        return {"status": 500, "body": json.dumps({"error": str(e)}), "headers": headers}
-
-    return {"status": 200, "body": json.dumps(data), "headers": headers}
+        return response.status(500).json({"error": str(e)})
