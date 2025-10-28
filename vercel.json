@@ -1,15 +1,8 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "api/tv.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/tv",
-      "dest": "api/tv.py"
+      "source": "/api/tv",
+      "destination": "/api/tv.py"
     }
   ]
 }
