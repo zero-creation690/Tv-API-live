@@ -1,0 +1,10 @@
+{
+  "name": "tv-proxy-api",
+  "version": "1.0.0",
+  "description": "CORS proxy for TV API",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
