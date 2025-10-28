@@ -1,23 +1,15 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "api/tv.py",
+      "use": "@vercel/python"
+    }
+  ],
   "routes": [
     {
-      "src": "/tv",
-      "methods": ["GET"],
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type"
-      }
-    },
-    {
-      "src": "/tv",
-      "methods": ["OPTIONS"],
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type"
-      }
+      "src": "/api/tv",
+      "dest": "api/tv.py"
     }
   ]
 }
