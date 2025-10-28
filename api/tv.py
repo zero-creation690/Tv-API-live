@@ -1,26 +1,27 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+import json
 import requests
 
-app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
-
-@app.route('/tv', methods=['GET'])
-def get_tv():
-    search = request.args.get('search', '')
-    if not search:
-        return jsonify({"error": "Missing search parameter"}), 400
-
-    # Original API URL
-    original_api = f"https://tv-chi-eosin.vercel.app/tv?search={search}"
-    try:
-        response = requests.get(original_api)
-        data = response.json()
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-    return jsonify(data)
-
-# For Vercel deployment
 def handler(request, context):
-    return app(request.environ, context)
+    # Enable CORS
+    headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type"
+    }
+
+    if request["method"] == "OPTIONS":
+        return {"status": 200, "body": "", "headers": headers}
+
+    search = request["query"].get("search", "")
+    if not search:
+        return {"status": 400, "body": json.dumps({"error": "Missing search parameter"}), "headers": headers}
+
+    try:
+        # Forward the request to the original API
+        url = f"https://tv-chi-eosin.vercel.app/tv?search={search}"
+        resp = requests.get(url, timeout=10)
+        data = resp.json()
+    except Exception as e:
+        return {"status": 500, "body": json.dumps({"error": str(e)}), "headers": headers}
+
+    return {"status": 200, "body": json.dumps(data), "headers": headers}
