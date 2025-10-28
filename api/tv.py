@@ -1,25 +1,32 @@
 import requests
-import json
 
 def handler(request, response):
-    # --- Enable CORS ---
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
-
-    # --- Handle preflight request ---
-    if request.method == "OPTIONS":
-        return response.status(200).send("")
-
-    search = request.query.get("search")
+    # Get 'search' query parameter
+    search = request.args.get("search", "")
     if not search:
-        return response.status(400).json({"error": "Missing search parameter"})
+        response.status_code = 400
+        return response.json({"error": "Missing 'search' query parameter"})
+
+    # Your base API URL
+    base_url = "https://tv-chi-eosin.vercel.app/tv"
 
     try:
-        # Call your original API
-        url = f"https://tv-chi-eosin.vercel.app/tv?search={search}"
-        r = requests.get(url, timeout=10)
+        # Fetch data from the original API
+        r = requests.get(base_url, params={"search": search})
+        r.raise_for_status()
         data = r.json()
-        return response.status(200).json(data)
+
+        # Add CORS headers
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+
+        return response.json(data)
+
     except Exception as e:
-        return response.status(500).json({"error": str(e)})
+        response.status_code = 500
+        return response.json({"error": str(e)})
+
+
+# Required export for Vercel Python runtime
+handler.is_async = False
