@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/tv.py": {
+      "runtime": "python3.9"
+    }
+  },
+  "routes": [
+    { "src": "/api/tv", "dest": "/api/tv.py" }
+  ]
+}
